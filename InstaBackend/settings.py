@@ -26,7 +26,7 @@ SECRET_KEY = 'df)@fv5uve1*qpl(hf8a#8n!s#n+^1km%1i0@mt70dn^uu^snb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['hepoku.herokuapp.com','localhost','127.0.0.1','0.0.0.0']
 
 
 # Application definition
