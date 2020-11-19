@@ -87,8 +87,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'InstaBackend',
-        'USER': os.environ.get('PGUSER') | 'postgres',
-        'PASSWORD': os.environ.get('PGPASSWORD') |'Ra1nm3t3r',
+        'USER': 'postgres',
+        'PASSWORD': 'Ra1nm3t3r',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
