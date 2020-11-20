@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response 
@@ -91,3 +92,41 @@ def createSubComment(request):
             }},status=status.HTTP_201_CREATED)  
         return Response({"error":"All fields are required!"},status=HTTP_400_BAD_REQUEST)
     return Response({"error":"The post no longer exists"},status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+def getAllPosts(request):
+    qs_post = PostModel.objects.all()
+    final_content = []
+    for post in qs_post:
+        sub_content = {
+            "title":post.title,
+            "image":post.image,
+            "description":post.description,
+            "likes":post.likes,
+            "author":post.author.username,
+            "id":post.id,
+            "comments":[]
+        }
+        qs_mainComments = MainCommentModel.objects.filter(main_post_id=post.id)
+        for mainComment in qs_mainComments:
+            main_comment_content = {
+                "comment":mainComment.comment,
+                "author":mainComment.author.username,
+                "post":post.id,
+                "id":mainComment.id,
+                "sub_comments":[]
+            }
+            qs_subComments = SubCommentModel.objects.filter(main_comment_id=mainComment.id)
+            for subComment in qs_subComments:
+                sub_comment_content = {
+                    "comment":subComment.comment,
+                    "author":subComment.author.username,
+                    "main_comment":mainComment.id,
+                    "id":subComment.id
+                    }
+                main_comment_content['sub_comments'].append(sub_comment_content)
+            sub_content['comments'].append(main_comment_content)
+        final_content.append(sub_content)
+    return Response(final_content,status=status.HTTP_200_OK)
