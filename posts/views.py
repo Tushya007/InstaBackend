@@ -1,4 +1,4 @@
-import re
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response 
@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.status import HTTP_400_BAD_REQUEST
-from .serializers import MainCommentSerializer, PostSerializer, SubCommentSerializer
-from .models import PostModel,MainCommentModel,SubCommentModel
+from .serializers import MainCommentSerializer, PostSerializer, SubCommentSerializer,LikeSerializer
+from .models import PostModel,MainCommentModel,SubCommentModel,LikeModel
 from django.contrib.auth.models import User
 # Create your views here.
 
@@ -28,15 +28,15 @@ def createPost(request):
         author=user
         )
     if post is not None:
-        post.save()
-        return Response({"message":"Post has been created","details":{
+        content = {"message":"Post has been created","details":{
             "title":post.title,
             "image":post.image,
             "description":post.description,
-            "likes":post.likes,
             "author":user.username,
             "id":post.id
-        }},status=status.HTTP_201_CREATED)
+        }}
+        post.save()
+        return Response(content,status=status.HTTP_201_CREATED)
     return Response({"error":"All fields are required!"},status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -56,13 +56,14 @@ def createMainComment(request):
             main_post=post
         )
         if comment is not None:
-            comment.save()
-            return Response({"message":"Post has been created","details":{
+            content = {"message":"Post has been created","details":{
                 "comment":comment.comment,
                 "author":user.username,
                 "post":post.id,
                 "id":comment.id
-            }},status=status.HTTP_201_CREATED)  
+            }}
+            comment.save()
+            return Response(content,status=status.HTTP_201_CREATED)  
         return Response({"error":"All fields are required!"},status=HTTP_400_BAD_REQUEST)
     return Response({"error":"The post no longer exists"},status=status.HTTP_400_BAD_REQUEST)
 
@@ -83,15 +84,38 @@ def createSubComment(request):
             main_comment=main_comment
         )
         if comment is not None:
-            comment.save()
-            return Response({"message":"Post has been created","details":{
+            content = {"message":"Post has been created","details":{
                 "comment":comment.comment,
                 "author":user.username,
                 "main_comment":main_comment.id,
                 "id":comment.id
-            }},status=status.HTTP_201_CREATED)  
+            }}
+            comment.save()
+            return Response(content,status=status.HTTP_201_CREATED)  
         return Response({"error":"All fields are required!"},status=HTTP_400_BAD_REQUEST)
     return Response({"error":"The post no longer exists"},status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@authentication_classes([TokenAuthentication])
+def likePost(request):
+    waste,token = request.headers['Authorization'].split(' ')
+    user = Token.objects.get(key=token).user
+    serializer = LikeSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response({"error":"Post dosent exists"},status=status.HTTP_400_BAD_REQUEST)
+    post = PostModel.objects.get(id=serializer.data['post'])
+    if post is None:
+        return Response({"error":"Post dosent exists"},status=status.HTTP_400_BAD_REQUEST)
+    like = LikeModel.objects.create(post=post,author=user)
+    if like is not None:
+        content = {
+            "message":"Like added"
+        }
+        like.save()
+        return JsonResponse(content,status=status.HTTP_201_CREATED)
+    return Response({"error":"The post no longer exists"},status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -104,11 +128,18 @@ def getAllPosts(request):
             "title":post.title,
             "image":post.image,
             "description":post.description,
-            "likes":post.likes,
+            "likes":[],
             "author":post.author.username,
             "id":post.id,
             "comments":[]
         }
+        qs_likes = LikeModel.objects.all()
+        for like in qs_likes:
+            main_like_content = {
+                "post":like.post.id,
+                "author":like.author.username,
+            }
+            sub_content['likes'].append(main_like_content)
         qs_mainComments = MainCommentModel.objects.filter(main_post_id=post.id)
         for mainComment in qs_mainComments:
             main_comment_content = {

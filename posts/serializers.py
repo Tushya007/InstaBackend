@@ -1,5 +1,6 @@
+from django.db.models import fields
 from rest_framework import serializers
-from .models import PostModel, MainCommentModel,SubCommentModel
+from .models import PostModel, MainCommentModel,SubCommentModel,LikeModel
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,3 +16,8 @@ class SubCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCommentModel
         fields = ('comment','main_comment')
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LikeModel
+        fields = ['post']

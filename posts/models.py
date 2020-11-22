@@ -6,7 +6,6 @@ class PostModel(models.Model):
     title = models.CharField(max_length=200)
     image = models.CharField(max_length=3000,default="n/a")
     description = models.CharField(max_length=1000)
-    likes = models.IntegerField(default=1)
     author = models.ForeignKey(User,on_delete=models.CASCADE)
 
     def __str__(self):
@@ -29,3 +28,10 @@ class SubCommentModel(models.Model):
 
     def __str__(self):
         return self.comment
+
+class LikeModel(models.Model):
+    author = models.ForeignKey(User,on_delete=models.CASCADE)
+    post = models.ForeignKey(PostModel,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.likes
