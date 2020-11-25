@@ -16,26 +16,29 @@ from rest_framework.authtoken.models import Token
 def signup(request):
     serializer = UserSerializer(data=request.data)
     if not serializer.is_valid():
-        return Response({"error":"User already exists"},status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message":"User already exists"},status=status.HTTP_400_BAD_REQUEST)
     hashed_password = bcrypt.hashpw(serializer.data['password'].encode(),bcrypt.gensalt())
     user = User.objects.create(username=serializer.data['username'],email=serializer.data['email'],password=hashed_password)
     if user is not None:
         token = Token.objects.create(user=user)
         user.save()
         content = {
-            "username":user.username,
-            "email":user.email,
-            "token":token.key
+            "message":"User has been created",
+            "details":{
+                "username":user.username,
+                "email":user.email,
+                "token":token.key
+            }
         }   
         return Response(content,status=status.HTTP_201_CREATED)
-    return Response({"err":"server error"},status=status.HTTP_401_UNAUTHORIZED)
+    return Response({"message":"server error"},status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
     serialzer = UserLoginSerializer(data=request.data)
     if serialzer.is_valid():
-        return Response({"error":"Wrong credentials"},status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"message":"Wrong credentials"},status=status.HTTP_401_UNAUTHORIZED)
     user_by_username = User.objects.filter(username=serialzer.data['username']).first()
     if user_by_username is not None:
         _password = serialzer.data['password'].encode()
@@ -44,5 +47,4 @@ def login(request):
         if valid:
             token = Token.objects.get(user=user_by_username)
             return Response({"message":"User loggen in!","details":{"username":user_by_username.username,"token":token.key}})
-    return Response({"123":"!23"})
-
+    return Response({"message":"Wrong credentials"},status=status.HTTP_401_UNAUTHORIZED)

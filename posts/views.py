@@ -6,7 +6,6 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.status import HTTP_400_BAD_REQUEST
 from .serializers import MainCommentSerializer, PostSerializer, SubCommentSerializer,LikeSerializer
 from .models import PostModel,MainCommentModel,SubCommentModel,LikeModel
 from django.contrib.auth.models import User
@@ -64,7 +63,7 @@ def createMainComment(request):
             }}
             comment.save()
             return Response(content,status=status.HTTP_201_CREATED)  
-        return Response({"error":"All fields are required!"},status=HTTP_400_BAD_REQUEST)
+        return Response({"error":"All fields are required!"},status=status.HTTP_400_BAD_REQUEST)
     return Response({"error":"The post no longer exists"},status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -92,7 +91,7 @@ def createSubComment(request):
             }}
             comment.save()
             return Response(content,status=status.HTTP_201_CREATED)  
-        return Response({"error":"All fields are required!"},status=HTTP_400_BAD_REQUEST)
+        return Response({"error":"All fields are required!"},status=status.HTTP_400_BAD_REQUEST)
     return Response({"error":"The post no longer exists"},status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
