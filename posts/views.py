@@ -124,7 +124,7 @@ def likePost(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def getAllPosts(request):
-    qs_post = PostModel.objects.all()
+    qs_post = reversed(PostModel.objects.all())
     final_content = []
     for post in qs_post:
         sub_content = {
