@@ -26,7 +26,8 @@ SECRET_KEY = 'df)@fv5uve1*qpl(hf8a#8n!s#n+^1km%1i0@mt70dn^uu^snb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['hepoku.herokuapp.com','localhost','127.0.0.1','0.0.0.0']
+ALLOWED_HOSTS = ['hepoku.herokuapp.com', 'localhost',
+                 '127.0.0.1', '0.0.0.0', 'https://hepoku-86f8f.web.app/']
 
 
 # Application definition
@@ -168,5 +169,5 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.CryptPasswordHasher',
 )
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000'
+    'https://hepoku-86f8f.web.app/'
 ]
