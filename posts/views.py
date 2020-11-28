@@ -108,6 +108,11 @@ def likePost(request):
     if not serializer.is_valid():
         return Response({"error": "Post dosent exists"}, status=status.HTTP_400_BAD_REQUEST)
     post = PostModel.objects.get(id=serializer.data['post'])
+    like_qs = LikeModel.objects.filter(post=post)
+    for like in like_qs:
+        if like.author == user:
+            like.delete()
+            return Response({"message":"Unliked post"},status=status.HTTP_200_OK)
     if post is None:
         return Response({"error": "Post dosent exists"}, status=status.HTTP_400_BAD_REQUEST)
     like = LikeModel.objects.create(post=post, author=user)
