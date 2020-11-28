@@ -169,5 +169,5 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.CryptPasswordHasher',
 )
 CORS_ALLOWED_ORIGINS = [
-    'https://hepoku-86f8f.web.app/'
+    'https://hepoku-86f8f.web.app'
 ]
