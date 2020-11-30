@@ -132,6 +132,7 @@ def getAllPosts(request):
     qs_post = reversed(PostModel.objects.all())
     final_content = []
     for post in qs_post:
+        post_date_time_created = post.date_time_create.strftime("%Y-%m-%d %H:%M:%S")
         sub_content = {
             "title": post.title,
             "image": post.image,
@@ -139,35 +140,38 @@ def getAllPosts(request):
             "likes": [],
             "author": post.author.username,
             "id": post.id,
-            "date_time_created":post.date_time_create,
+            "date_time_created":post_date_time_created,
             "comments": []
         }
         qs_likes = LikeModel.objects.filter(post=post)
         for like in qs_likes:
+            like_date_time_created = like.date_time_create.strftime("%Y-%m-%d %H:%M:%S")
             main_like_content = {
                 "post": like.post.id,
                 "author": like.author.username,
-                "date_time_created":like.date_time_create,
+                "date_time_created":like_date_time_created,
             }
             sub_content['likes'].append(main_like_content)
         qs_mainComments = MainCommentModel.objects.filter(main_post_id=post.id)
         for mainComment in qs_mainComments:
+            mainComment_date_time_created = mainComment.date_time_create.strftime("%Y-%m-%d %H:%M:%S")
             main_comment_content = {
                 "comment": mainComment.comment,
                 "author": mainComment.author.username,
                 "post": post.id,
                 "id": mainComment.id,
-                "date_time_created":mainComment.date_time_create,
+                "date_time_created":mainComment_date_time_created,
                 "sub_comments": []
             }
             qs_subComments = SubCommentModel.objects.filter(
                 main_comment_id=mainComment.id)
             for subComment in qs_subComments:
+                subComment_date_time_created = subComment.date_time_create.strftime("%Y-%m-%d %H:%M:%S")
                 sub_comment_content = {
                     "comment": subComment.comment,
                     "author": subComment.author.username,
                     "main_comment": mainComment.id,
-                    "date_time_created":subComment.date_time_create,
+                    "date_time_created":subComment_date_time_created,
                     "id": subComment.id
                 }
                 main_comment_content['sub_comments'].append(
