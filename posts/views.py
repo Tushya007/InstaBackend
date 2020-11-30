@@ -139,6 +139,7 @@ def getAllPosts(request):
             "likes": [],
             "author": post.author.username,
             "id": post.id,
+            "date_time_created":post.date_time_create,
             "comments": []
         }
         qs_likes = LikeModel.objects.filter(post=post)
@@ -146,6 +147,7 @@ def getAllPosts(request):
             main_like_content = {
                 "post": like.post.id,
                 "author": like.author.username,
+                "date_time_created":like.date_time_create,
             }
             sub_content['likes'].append(main_like_content)
         qs_mainComments = MainCommentModel.objects.filter(main_post_id=post.id)
@@ -155,6 +157,7 @@ def getAllPosts(request):
                 "author": mainComment.author.username,
                 "post": post.id,
                 "id": mainComment.id,
+                "date_time_created":mainComment.date_time_create,
                 "sub_comments": []
             }
             qs_subComments = SubCommentModel.objects.filter(
@@ -164,6 +167,7 @@ def getAllPosts(request):
                     "comment": subComment.comment,
                     "author": subComment.author.username,
                     "main_comment": mainComment.id,
+                    "date_time_created":subComment.date_time_create,
                     "id": subComment.id
                 }
                 main_comment_content['sub_comments'].append(
